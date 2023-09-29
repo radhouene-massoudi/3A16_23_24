@@ -1,0 +1,14 @@
+
+{%set nbBooks=0%}
+{% for author in a %}
+
+{% set nbBooks=nbBooks+ author.nb_books%}
+{#{% if (author.nb_books>0)%}
+{{author.username}}
+{%endif%}#}
+<img src="{{asset(author.picture)}}">
+{{author.username}}
+<a  href="{{path('Bonj',{'name':author.username})}}">detail</a>
+{% endfor %}
+{{nbBooks}}
+nb authors{{a|length}}
