@@ -72,4 +72,17 @@ $em->persist($autho);
 $em->flush();
 return $this->redirectToRoute('fetchtwo');
     }
+
+    #[Route('/delete/{id}', name: 'add')]
+    public function removeAuthor(ManagerRegistry $mr,$id,AuthorRepository $repo){
+        $author=$repo->find($id);
+        $em=$mr->getManager();
+        if($author!=null){
+        $em->remove($author);
+        $em->flush();
+    }else{
+        return new Response('id nexsite pas');
+    }
+        return $this->redirectToRoute('fetchtwo'); 
+    }
 }
