@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Author;
 use App\Repository\AuthorRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -55,8 +57,18 @@ dd($result);
     }
 
     #[Route('/fetchtwo', name: 'fetchtwo')]
-    public function fetchtwoAuthors(AuthorRepository $repo){
-$result=$repo->findAll();
+    public function fetchtwoAuthors(AuthorRepository $repo,Request $req,EntityManagerInterface $em){
+$request=$em->createQuery("select a from App\Entity\Author a");
+$result=$request->getResult();
+        //$result=$repo->findAll();
+if($req->isMethod('post')){
+    $username=$req->get('test');
+    //dd($username);
+    $result=$repo->findByUsername($username);
+    return $this->render('author/authors.html.twig',[
+        'auth'=>$result
+    ]);
+}
 return $this->render('author/authors.html.twig',[
     'auth'=>$result
 ]);
@@ -85,4 +97,21 @@ return $this->redirectToRoute('fetchtwo');
     }
         return $this->redirectToRoute('fetchtwo'); 
     }
+
+    #[Route('/dql', name: 'dql')]
+    public function dql(AuthorRepository $repo,EntityManagerInterface $em){
+      //  $request=$em->createQuery("select a.username, b.title nom_book from App\Entity\Author a join a.books b");
+       // $result=$request->getResult();
+       // $result=$request->getSingleScalarResult();
+       // dd($result[0][1]);
+       $result=$repo->fetchAuthorByUserName('ali');
+       dd($result);
+    }
+    #[Route('/qb', name: 'QB')]
+    public function QB(AuthorRepository $repo,EntityManagerInterface $em){
+      
+       $result=$repo->fetchAuthors();
+       dd($result);
+    }
+
 }
